@@ -6,3 +6,9 @@ sqlalchemy
 alembic
 asyncpg
 psyciopg2
+jose
+jwt
+passlib
+passlib[bcrypt] 
+python-jose[cryptography]
+pydantic[email]
