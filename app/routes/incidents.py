@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.core.database import get_db
@@ -8,6 +8,9 @@ from app.schemas.incident import IncidentCreate, IncidentRead, IncidentUpdateSta
 from app.core.dependencies import get_current_user
 from app.core.permissions import require_role
 from datetime import datetime
+from typing import Optional
+from datetime import date
+from sqlalchemy import and_
 
 router = APIRouter(prefix="/incidents", tags=["Incidents"])
 
@@ -28,13 +31,33 @@ async def create_incident(
     await db.refresh(incident)
     return incident
 
-# Listar todos os incidentes
+# Lista os incidentes podendo filtrar
 @router.get("/", response_model=list[IncidentRead])
 async def list_incidents(
+    status: Optional[IncidentStatus] = None,
+    reporter_id: Optional[int] = None,
+    from_date: Optional[date] = None,
+    to_date: Optional[date] = None,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    result = await db.execute(select(Incident))
+    query = select(Incident)
+
+    filters = []
+
+    if status:
+        filters.append(Incident.status == status)
+    if reporter_id:
+        filters.append(Incident.reporter_id == reporter_id)
+    if from_date:
+        filters.append(Incident.created_at >= from_date)
+    if to_date:
+        filters.append(Incident.created_at <= to_date)
+
+    if filters:
+        query = query.where(and_(*filters))
+
+    result = await db.execute(query)
     return result.scalars().all()
 
 # Atualizar status do incidente (admin)
