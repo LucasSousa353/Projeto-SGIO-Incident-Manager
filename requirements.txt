@@ -12,3 +12,5 @@ passlib
 passlib[bcrypt] 
 python-jose[cryptography]
 pydantic[email]
+pytest
+pytest-asyncio

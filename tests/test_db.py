@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-# Adiciona a raiz do projeto ao sys.path
+# passando o path raiz
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from app.core.database import engine, Base
