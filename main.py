@@ -3,6 +3,7 @@ from app.core.config import get_settings
 from app.routes import auth
 from app.routes import default
 from app.routes import users
+from app.routes import incidents
 
 settings = get_settings()
 
@@ -14,3 +15,4 @@ app = FastAPI(
 app.include_router(default.router, prefix=settings.api_v1_str)
 app.include_router(auth.router, prefix=settings.api_v1_str)
 app.include_router(users.router, prefix=settings.api_v1_str)
+app.include_router(incidents.router, prefix=settings.api_v1_str)
